@@ -30,11 +30,11 @@ tests:
 	@make clean
 
 # Deploy to PyPi
-build:
+build_pkg:
 	@make clean
 	@python3 -m pip install --upgrade build
 	@python3 -m pip install --upgrade twine
 	@python3 -m build
 build_and_deploy_to_pypi:
-	@make build
+	@make build_pkg
 	@python3 -m twine upload --verbose --repository pypi dist/*
