@@ -14,32 +14,45 @@ def read_csv_in_chunks(
     chunk_func: Callable | None = None,
     chunksize: int | None = 10**6,
     dtype: DtypeArg | None = "string",
-    **kwargs
-):
+    **kwargs: dict | None
+) -> pd.DataFrame:
     """
     Usage
     -----
-    Use pd.read_csv in chunk and allow to apply a any custom function to each chunk
-    e.g to preserve memory, you can pass a function which filter each chunk
+    Read in chunks general delimited file into DataFrame (based on pd.read_csv)
+
+    Custom function could be applied to each chunk. It could for example be use to apply
+    filter at reading level and preserve memory usage on big DataFrame.
 
     Arguments
     ---------
-    filepath_or_buffer:
-    chunk_func: the function will be applied to each chunk (e.g. filter, change type...)
+    filepath_or_buffer : str, path object or file-like object
+        Any valid string path is acceptable. The string could be a URL.
+    chunk_func : Callable, default None
+        The function will be applied to each chunk (e.g. filter, change type...)
         function should have "df" as first argument
-    **kwargs: accept any argument from pd.read_csv and from the custom chunk function
+    **kwargs : dict | None
+        Pass any argument allowed by pd.read_csv and/or by the custom chunk function
 
     Exemple chunk usage
     -------------------
 
-    def filter_on_countries(df, countries):
-        return df[df["country"].isin(countries)]
+    .. code-block:: python
 
-    df = read_csv_in_chunks(
-        filepath_or_buffer="path_to.csv",
-        chunk_func=filter_on_adh,
-        countries=["France", "Germany"],
-    )
+        import akutils as ak
+        from akutils import PATH_TO_AKUTILS_PKG
+
+        def filter_on_countries(df, countries):
+            return df[df["country"].isin(countries)]
+
+        file_path = PATH_TO_AKUTILS_PKG / "tests" / "_fixtures" / "sales.csv"
+        df = ak.read_csv_in_chunks(
+            filepath_or_buffer=file_path,
+            sep=";",
+            chunk_func=filter_on_countries,
+            countries=["France", "Germany"],
+            chunksize=5
+        )
     """
     print(f"File: {filepath_or_buffer}")
     locals_args = locals()  # get all args passed in the function
