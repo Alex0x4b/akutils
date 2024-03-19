@@ -14,7 +14,12 @@ def timeit(func):
     return timeit_wrapper
 
 
-def contruct_function_args_from_locals(function, locals_args):
+def sanitize_function_args_from_locals(function, locals_args):
+    # Check if a function is passed, if not return empty dict
+    if not hasattr(function, '__call__'):
+        return dict()
+
+    # Contruct agruments from local
     specified_args = {
         key: value for key, value in locals_args.items()
         if key not in ["kwargs"]

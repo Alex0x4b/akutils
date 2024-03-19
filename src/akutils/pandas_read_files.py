@@ -1,13 +1,19 @@
 import pandas as pd
-from akutils.utils_function import timeit, contruct_function_args_from_locals
+from typing import Callable
+from pandas._typing import (
+    FilePath,
+    ReadCsvBuffer,
+    DtypeArg
+)
+from akutils.utils_functions import timeit, sanitize_function_args_from_locals
 
 
 @timeit
 def read_csv_in_chunks(
-    filepath_or_buffer,
-    chunk_func=None,
-    chunksize=10**6,
-    dtype="string",
+    filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
+    chunk_func: Callable | None = None,
+    chunksize: int | None = 10**6,
+    dtype: DtypeArg | None = "string",
     **kwargs
 ):
     """
@@ -37,13 +43,13 @@ def read_csv_in_chunks(
     """
     print(f"File: {filepath_or_buffer}")
     locals_args = locals()  # get all args passed in the function
-    read_csv_args = contruct_function_args_from_locals(pd.read_csv, locals_args)
+    read_csv_args = sanitize_function_args_from_locals(pd.read_csv, locals_args)
 
     df = pd.DataFrame()
     counter = 0
     for chunk in pd.read_csv(**read_csv_args):
         print(f"Chunk number => {counter}")
-        chunk_func_kwarg = contruct_function_args_from_locals(chunk_func, locals_args)
+        chunk_func_kwarg = sanitize_function_args_from_locals(chunk_func, locals_args)
         chunk = chunk_func(df=chunk, **chunk_func_kwarg) if chunk_func else chunk
         df = pd.concat([df, chunk], axis=0, ignore_index=True)
         counter += 1
