@@ -17,15 +17,13 @@ def read_csv_in_chunks(
     **kwargs: dict | None
 ) -> pd.DataFrame:
     """
-    Usage
-    -----
     Read in chunks general delimited file into DataFrame (based on pd.read_csv)
 
     Custom function could be applied to each chunk. It could for example be use to apply
     filter at reading level and preserve memory usage on big DataFrame.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     filepath_or_buffer : str, path object or file-like object
         Any valid string path is acceptable. The string could be a URL.
     chunk_func : Callable, default None
