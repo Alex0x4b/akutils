@@ -150,5 +150,32 @@ class TestReadMultipleCsvFromDir():
         pd.testing.assert_frame_equal(df, df_expected)
 
 
+class TestReadMultipleXlsxFromDir():
+
+    df_expected = pd.DataFrame(
+        data=[
+            [1, 1, "Italy"],
+            [1, 2, "Germany"],
+            [1, 3, "France"],
+            [2, 4, "Italy"],
+            [3, 5, "Germany"],
+            [3, 6, "France"],
+            [4, 7, "Italy"],
+            [4, 8, "Germany"]
+        ],
+        columns=["month", "nb_sales", "country"]
+    )
+
+    def test_read_multiple_xlsx_from_dir(self):
+        """
+        Simple cases (the dir containing also not excel files)
+        """
+        df_expected = self.df_expected.copy()
+        dir_path = PATH_TO_AKUTILS_PKG / "tests" / "_fixtures" / "sales_per_month"
+        df = ak.read_multiple_xlsx_from_dir(dir_path)
+        df = df.sort_values("nb_sales").reset_index(drop=True)
+        pd.testing.assert_frame_equal(df, df_expected)
+
+
 if __name__ == "__main__":
     pytest.main([__file__])

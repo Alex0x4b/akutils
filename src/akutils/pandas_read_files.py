@@ -1,4 +1,5 @@
 import pandas as pd
+import warnings
 from upath import UPath
 from pathlib import Path
 from typing import Callable
@@ -110,10 +111,60 @@ def read_multiple_csv_from_dir(
 
     list_of_df = []
     if len(files_allowed) == 0:
+        warnings.warn("No file found: empty pd.DataFrame has been returned")
         return pd.DataFrame
     for file in files_allowed:
         print(f"READ: {file.name}")
         _df = read_csv_in_chunks(filepath_or_buffer=file, **kwargs)
+        list_of_df.append(_df)
+    df = pd.concat(list_of_df, axis=0, ignore_index=True)
+    return df
+
+
+@timeit
+def read_multiple_xlsx_from_dir(
+    dir_path: Path | UPath,
+    regex: str = r".*",
+    case_sensitive: bool = False,
+    allowed_extension: list = [".xlsx", ".xls", ".xlsm", ".xlsb"],
+    **kwargs
+):
+    """
+    From a given directory, lists, reads and concatenates into a DataFrame all
+    Excel files matching the requesting pattern.
+
+    It uses pd.read_excel, you can use any of its parameters
+
+    Parameters
+    ----------
+    dir_path : Path | UPath
+        Path of the directory to be scanned
+    regex : str, default r".*"
+        Regex string to select from the directory only the files mathcing the pattern
+        Default behaviour lists all files founded in the directory
+    case_sensitive : bool, default False
+        Allow to enable or disable case sensitive on regex match
+    allowed_extension : list, default [".xlsx", ".xls", ".xlsm", ".xlsb"]
+    **kwargs
+        Pass any argument allowed by pd.read_excel
+    """
+    # Lists all files matching regex
+    file_matched = list_files_from_dir(
+        dir_path=dir_path, regex=regex, case_sensitive=case_sensitive)
+    # Filter on files with csv extension
+    allowed_extension = [ext.lower() for ext in allowed_extension]
+    files_allowed = [
+        file for file in file_matched
+        if file.suffix.lower() in allowed_extension
+    ]
+
+    list_of_df = []
+    if len(files_allowed) == 0:
+        warnings.warn("No file found: empty pd.DataFrame has been returned")
+        return pd.DataFrame
+    for file in files_allowed:
+        print(f"READ: {file.name}")
+        _df = pd.read_excel(io=file, **kwargs)
         list_of_df.append(_df)
     df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
