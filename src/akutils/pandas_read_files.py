@@ -30,7 +30,7 @@ def read_csv_in_chunks(
         Any valid string path is acceptable. The string could be a URL.
     chunk_func : Callable, default None
         The function will be applied to each chunk (e.g. filter, change type...)
-        function should have "df" as first argument
+        first function arg should should be the chunk df
     **kwargs : dict | None
         Pass any argument allowed by pd.read_csv and/or by the custom chunk function
 
@@ -63,7 +63,7 @@ def read_csv_in_chunks(
     for chunk in pd.read_csv(**read_csv_args):
         print(f"Chunk number => {counter}")
         chunk_func_kwarg = sanitize_function_args_from_locals(chunk_func, locals_args)
-        chunk = chunk_func(df=chunk, **chunk_func_kwarg) if chunk_func else chunk
+        chunk = chunk_func(chunk, **chunk_func_kwarg) if chunk_func else chunk
         df = pd.concat([df, chunk], axis=0, ignore_index=True)
         counter += 1
     return df
