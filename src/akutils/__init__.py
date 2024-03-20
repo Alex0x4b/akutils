@@ -1,5 +1,5 @@
 # Import API
-from akutils.project_api import *
+from akutils.__api__ import *
 
 # Get path to akutils pkg to import test fixtures
 from pathlib import Path
