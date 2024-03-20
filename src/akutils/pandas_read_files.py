@@ -12,7 +12,7 @@ from akutils.utils_functions import timeit, sanitize_function_args_from_locals
 def read_csv_in_chunks(
     filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
     chunk_func: Callable | None = None,
-    chunksize: int | None = 10**6,
+    chunksize: int = 10**6,
     dtype: DtypeArg | None = "string",
     **kwargs: dict | None
 ) -> pd.DataFrame:
