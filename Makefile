@@ -20,7 +20,7 @@ dev_install:
 qa_check_code:
 	@find ./src -name "*.py" | xargs flake8 --exclude *.eggs*
 unittest:
-	@pytest -v --cov=src --cov-report term-missing src/**/tests/unit
+	@pytest -v --cov=akutils --cov-report term-missing src/**/tests/unit
 typetest:
 	@find ./src -name "*.py" | xargs mypy
 tests:
