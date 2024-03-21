@@ -6,10 +6,12 @@ data structure, API, file manipulation, etc.).
 # Main Features
 
 Some features supported:
-- Extended file(s) reader to pd.DataFrame (chunk, multiple files)
-- Change pd.Series type
-- Clean and manipulate pd.Series
-- Create and delete directory and files
+- Extends Pandas reader to natively include chunks, multiple files aggregation, etc.
+- Provide pd.Series converter for strings to types that handle the variety of ways to
+  write floats or dates.
+- Provide multiple high level methods to manipulate pd.Series (strip, delete special
+  characters, etc.)
+- Safe files and directories manipulation
 
 # Where to get it
 
