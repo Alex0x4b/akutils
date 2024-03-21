@@ -11,7 +11,9 @@ from akutils.pandas_read_files import (
 from akutils.pandas_serie_cleaner import (
     strip_columns,
     remove_accent_from_cols,
-    capitalise_cols
+    capitalise_cols,
+    fillna_float_columns,
+    remove_empty_cols_from_df
 )
 from akutils.os import (
     list_files_from_dir,
@@ -21,8 +23,4 @@ from akutils.os import (
 from akutils.utils_functions import (
     timeit,
     sanitize_function_args_from_locals
-)
-from akutils.pandas_pretty_df import (
-    fillna_float_columns,
-    remove_empty_cols_from_df
 )
