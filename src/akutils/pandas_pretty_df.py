@@ -19,7 +19,7 @@ def remove_empty_cols_from_df(df: pd.DataFrame) -> pd.DataFrame:
         col for col in df.columns
         if (
             (~(df[col].isna().all()))
-            (~((df[col] == "").all()))
+            & (~((df[col] == "").all()))
         )
     ]
     return df[filled_cols]

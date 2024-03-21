@@ -22,7 +22,7 @@ from akutils.utils_functions import (
     timeit,
     sanitize_function_args_from_locals
 )
-from akutils.pandas_pretty import (
+from akutils.pandas_pretty_df import (
     fillna_float_columns,
     remove_empty_cols_from_df
 )
