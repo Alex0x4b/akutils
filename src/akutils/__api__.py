@@ -13,7 +13,9 @@ from akutils.pandas_serie_cleaner import (
     remove_accent_from_cols,
     capitalise_cols,
     fillna_float_columns,
-    remove_empty_cols_from_df
+    remove_empty_cols_from_df,
+    convert_datetimes_to_date
+
 )
 from akutils.os import (
     list_files_from_dir,
