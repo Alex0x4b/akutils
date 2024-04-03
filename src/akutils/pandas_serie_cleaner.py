@@ -1,5 +1,10 @@
 import pandas as pd
-from pandas.api.types import is_string_dtype, is_object_dtype, is_float_dtype
+from pandas.api.types import (
+    is_string_dtype,
+    is_object_dtype,
+    is_float_dtype,
+    is_datetime64_dtype
+)
 from typing import Optional
 import warnings
 
@@ -109,3 +114,13 @@ def remove_empty_cols_from_df(df: pd.DataFrame) -> pd.DataFrame:
         )
     ]
     return df[filled_cols]
+
+
+def convert_datetimes_to_date(df: pd.DataFrame) -> pd.DataFrame:
+    cols_datetime = [
+        col for col in df
+        if is_datetime64_dtype(df[col])
+    ]
+    for col in cols_datetime:
+        df[col] = df[col].dt.date
+    return df
