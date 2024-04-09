@@ -111,7 +111,8 @@ def read_multiple_csv_from_dir(
 
     list_of_df = []
     if len(files_allowed) == 0:
-        warnings.warn("No file found: empty pd.DataFrame has been returned")
+        warnings.warn(
+            f"No file found in {dir_path}: empty pd.DataFrame has been returned")
         return pd.DataFrame
     for file in files_allowed:
         print(f"READ: {file.name}")
@@ -160,7 +161,8 @@ def read_multiple_xlsx_from_dir(
 
     list_of_df = []
     if len(files_allowed) == 0:
-        warnings.warn("No file found: empty pd.DataFrame has been returned")
+        warnings.warn(
+            f"No file found in {dir_path}: empty pd.DataFrame has been returned")
         return pd.DataFrame
     for file in files_allowed:
         print(f"READ: {file.name}")
