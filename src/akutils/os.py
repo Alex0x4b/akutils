@@ -3,13 +3,30 @@ import re
 from upath import UPath
 from pathlib import Path
 import shutil
+from typing import Generator
+
+
+def _correct_azure_path(file_path: Path | UPath) -> Path | UPath:
+    """
+    Due newer glob version, Azurepath is duplicate in UPath.glob() output
+
+    Regex explained
+    ===============
+    abfs:/ -> start with absf:/
+    [^/] -> n'est pas suivi par "/"
+    .*$" -> tout ce qui suit
+    """
+    if "/abfs:/" in str(file_path):
+        file_name = file_path.name
+        file_path = UPath(re.sub(r"\/abfs:\/[^\/].*$", "", str(file_path))) / file_name
+    return file_path
 
 
 def list_files_from_dir(
     dir_path: Path | UPath,
     regex: str = r".*",
     case_sensitive: bool = False
-):
+) -> list[Path | UPath]:
     """
     Lists all file paths matching a regular expression in a directory.
 
@@ -24,8 +41,8 @@ def list_files_from_dir(
         Allow to enable or disable case sensitive on regex match
     """
     flags = 0 if case_sensitive else re.IGNORECASE
-    all_files = dir_path.glob("*")
-    matched_files = [file for file in all_files
+    all_files: Generator[Path | UPath, None, None] = dir_path.glob("*")
+    matched_files = [_correct_azure_path(file) for file in all_files
                      if re.search(pattern=regex, string=file.name, flags=flags)]
     return matched_files
 
