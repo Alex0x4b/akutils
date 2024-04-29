@@ -1,6 +1,9 @@
 import warnings
 import pandas as pd
 
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+pd.options.mode.copy_on_write = True
+
 
 def columns_to_float(
     df: pd.DataFrame,

@@ -8,6 +8,9 @@ from pandas.api.types import (
 from typing import Optional
 import warnings
 
+# https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+pd.options.mode.copy_on_write = True
+
 
 def capitalise_cols(
     df: pd.DataFrame,
