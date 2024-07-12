@@ -41,9 +41,14 @@ def list_files_from_dir(
         Allow to enable or disable case sensitive on regex match
     """
     flags = 0 if case_sensitive else re.IGNORECASE
-    all_files: Generator[Path | UPath, None, None] = dir_path.glob("*")
-    matched_files = [_correct_azure_path(file) for file in all_files
-                     if re.search(pattern=regex, string=file.name, flags=flags)]
+    all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
+    matched_files = [
+        _correct_azure_path(file) for file in all_path
+        if (
+            (re.search(pattern=regex, string=file.name, flags=flags))
+            and (file.is_file())
+        )
+    ]
     return matched_files
 
 
