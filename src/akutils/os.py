@@ -47,6 +47,36 @@ def list_files_from_dir(
     return matched_files
 
 
+def list_dir_from_dir(
+    dir_path: Path | UPath,
+    regex: str = r".*",
+    case_sensitive: bool = False
+) -> list[Path | UPath]:
+    """
+    Lists all directory paths matching a regular expression in a directory.
+
+    Parameters
+    ----------
+    dir_path : Path | UPath
+        Path of the directory to be scanned
+    regex : str, default r".*"
+        Regex string to match files to be returned
+        Default behaviour lists all files founded in the directory
+    case_sensitive : bool, default False
+        Allow to enable or disable case sensitive on regex match
+    """
+    flags = 0 if case_sensitive else re.IGNORECASE
+    all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
+    matched_dir = [
+        _correct_azure_path(dir) for dir in all_path
+        if (
+            (re.search(pattern=regex, string=dir.name, flags=flags))
+            and (dir.is_dir())
+        )
+    ]
+    return matched_dir
+
+
 def create_new_dir(
     dir_path: Path | UPath,
     force: bool = False
