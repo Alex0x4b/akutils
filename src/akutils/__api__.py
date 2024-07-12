@@ -19,6 +19,7 @@ from akutils.pandas_serie_cleaner import (
 )
 from akutils.os import (
     list_files_from_dir,
+    list_dir_from_dir,
     remove_files_from_directory,
     create_new_dir
 )
