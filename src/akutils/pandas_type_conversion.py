@@ -28,7 +28,7 @@ def columns_to_float(
         df[new_col] = pd.to_numeric(df[new_col], errors="coerce")
         df[new_col] = df[new_col].fillna(0)
         df[new_col] = df[new_col].values.astype(float)
-        df.loc[had_percent_sign, new_col] = df[new_col] / 100
+        df.loc[had_percent_sign, new_col] = df.loc[had_percent_sign, new_col] / 100
     return df
 
 
