@@ -92,7 +92,8 @@ def strip_columns(
             continue
         if (not is_string_dtype(df[column])) & (not is_object_dtype(df[column])):
             continue
-        df.loc[(~df[column].isna()), column] = df[column].str.strip()
+        mask_empty = (~df[column].isna())
+        df.loc[mask_empty, column] = df.loc[mask_empty, column].str.strip()
     return df
 
 
