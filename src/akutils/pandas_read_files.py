@@ -131,6 +131,7 @@ def read_multiple_xlsx_from_dir(
     regex: str = r".*",
     case_sensitive: bool = False,
     allowed_extension: list = [".xlsx", ".xls", ".xlsm", ".xlsb"],
+    add_source: bool = False,
     **kwargs
 ):
     """
@@ -170,6 +171,8 @@ def read_multiple_xlsx_from_dir(
     for file in files_allowed:
         print(f"READ: {file.name}")
         _df = pd.read_excel(io=file, **kwargs)
+        if add_source:
+            _df["file_source"] = file.name
         list_of_df.append(_df)
     df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
