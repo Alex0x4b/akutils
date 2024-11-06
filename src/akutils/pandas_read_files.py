@@ -76,7 +76,7 @@ def read_multiple_csv_from_dir(
     dir_path: Path | UPath,
     regex: str = r".*",
     case_sensitive: bool = False,
-    allowed_extension: list = [".csv", ".txt", ".dsv", ".gz", ".zip", ".tar"],
+    allowed_extension: list = [".csv", ".txt", ".dsv", ".gz", ".zip", ".tar", "7z"],
     add_source: bool = False,
     **kwargs
 ):
