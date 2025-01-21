@@ -8,7 +8,11 @@ from pandas._typing import (
     ReadCsvBuffer,
     DtypeArg
 )
-from akutils.utils_functions import timeit, sanitize_function_args_from_locals
+from akutils.utils_functions import (
+    timeit,
+    sanitize_function_args_from_locals,
+    control_if_usecols_exist_in_df
+)
 from akutils.os import list_files_from_dir
 
 
@@ -59,6 +63,7 @@ def read_csv_in_chunks(
     print(f"File: {filepath_or_buffer}")
     locals_args = locals()  # get all args passed in the function
     read_csv_args = sanitize_function_args_from_locals(pd.read_csv, locals_args)
+    read_csv_args = control_if_usecols_exist_in_df(**read_csv_args)
 
     df = pd.DataFrame()
     counter = 0

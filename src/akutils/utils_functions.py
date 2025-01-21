@@ -1,3 +1,4 @@
+import pandas as pd
 from functools import wraps
 from datetime import datetime
 
@@ -34,3 +35,19 @@ def sanitize_function_args_from_locals(function, locals_args):
         if key in function.__code__.co_varnames
     }
     return function_args
+
+
+def control_if_usecols_exist_in_df(**read_csv_args):
+    if "usecols" not in read_csv_args:
+        return read_csv_args
+    read_csv_args_header = read_csv_args.copy()
+    read_csv_args_header.update({
+        "usecols": None,
+        "nrows": 0,
+        "chunksize": None
+    })
+    df_columns = pd.read_csv(**read_csv_args_header).columns
+    read_csv_args.update({
+        "usecols": [col for col in read_csv_args["usecols"] if col in df_columns]
+    })
+    return read_csv_args
