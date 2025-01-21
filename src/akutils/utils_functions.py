@@ -1,7 +1,8 @@
 import pandas as pd
 from functools import wraps
 from datetime import datetime
-import warnings
+
+from akutils.os import warn
 
 
 def timeit(func):
@@ -52,7 +53,7 @@ def control_if_usecols_exist_in_df(**read_csv_args):
     valid_usecols = []
     for col in read_csv_args["usecols"]:
         if col not in df_columns:
-            warnings.warn(f"{col} (selected from usecols) was not found in df")
+            warn(f"{col} (selected from usecols) was not found in df")
             continue
         valid_usecols.append(col)
 

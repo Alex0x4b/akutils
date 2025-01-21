@@ -6,7 +6,7 @@ from pandas.api.types import (
     is_datetime64_dtype
 )
 from typing import Optional
-import warnings
+from akutils.os import warn
 
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 pd.options.mode.copy_on_write = True
@@ -28,7 +28,7 @@ def capitalise_cols(
     """
     for col in cols:
         if col not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {col}")
+            warn(f"column not found in DataFrame: {col}")
             continue
         df[col] = (
             df[col]
@@ -58,7 +58,7 @@ def remove_accent_from_cols(
     """
     for col in cols:
         if col not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {col}")
+            warn(f"column not found in DataFrame: {col}")
             continue
         df[col] = (
             df[col]
@@ -88,7 +88,7 @@ def strip_columns(
     cols = list(df.columns) if not cols else cols
     for column in cols:
         if column not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {column}")
+            warn(f"column not found in DataFrame: {column}")
             continue
         if (not is_string_dtype(df[column])) & (not is_object_dtype(df[column])):
             continue

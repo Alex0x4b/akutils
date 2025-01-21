@@ -1,5 +1,4 @@
 import pandas as pd
-import warnings
 from upath import UPath
 from pathlib import Path
 from typing import Callable
@@ -13,7 +12,7 @@ from akutils.utils_functions import (
     sanitize_function_args_from_locals,
     control_if_usecols_exist_in_df
 )
-from akutils.os import list_files_from_dir
+from akutils.os import list_files_from_dir, warn
 
 
 @timeit
@@ -117,7 +116,7 @@ def read_multiple_csv_from_dir(
 
     list_of_df = []
     if len(files_allowed) == 0:
-        warnings.warn(
+        warn(
             f"No file found in {dir_path}: empty pd.DataFrame has been returned")
         return pd.DataFrame
     for file in files_allowed:
@@ -170,7 +169,7 @@ def read_multiple_xlsx_from_dir(
 
     list_of_df = []
     if len(files_allowed) == 0:
-        warnings.warn(
+        warn(
             f"No file found in {dir_path}: empty pd.DataFrame has been returned")
         return pd.DataFrame
     for file in files_allowed:

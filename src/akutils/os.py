@@ -1,9 +1,12 @@
 import os
 import re
+import warnings
 from upath import UPath
 from pathlib import Path
 import shutil
 from typing import Generator
+
+from akutils.console_color import print_orange
 
 
 def _correct_azure_path(file_path: Path | UPath) -> Path | UPath:
@@ -125,3 +128,21 @@ def remove_files_from_directory(
     file_list = UPath(dir_path).glob(regex)
     for file in file_list:
         os.remove(file)
+
+
+def warn(message: str):
+    """
+    Warn in orange color
+    """
+
+    # Save the original warnings.warn function
+    original_warn = warnings.warn
+
+    # Temporarily override warnings.warn with print_orange
+    warnings.warn = lambda message, *args, **kwargs: print_orange(message)
+
+    # Call the overridden warning function
+    warnings.warn(message=message)
+
+    # Restore the original warnings.warn
+    warnings.warn = original_warn

@@ -1,5 +1,6 @@
-import warnings
 import pandas as pd
+
+from akutils.os import warn
 
 # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
 pd.options.mode.copy_on_write = True
@@ -13,7 +14,7 @@ def columns_to_float(
     suffixe = "_flt" if keep_source else ""
     for column in col_list:
         if column not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {column}")
+            warn(f"column not found in DataFrame: {column}")
             continue
         new_col = f"{column}{suffixe}"
         df[new_col] = df[column].values.astype(str)
@@ -40,7 +41,7 @@ def columns_to_int(
     suffixe = "_int" if keep_source else ""
     for column in col_list:
         if column not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {column}")
+            warn(f"column not found in DataFrame: {column}")
             continue
         new_col = f"{column}{suffixe}"
         df[new_col] = df[column].values.astype(str)
@@ -77,7 +78,7 @@ def columns_to_date(
     suffixe = "_dt" if keep_source else ""
     for column in col_list:
         if column not in df.columns:
-            warnings.warn(f"column not found in DataFrame: {column}")
+            warn(f"column not found in DataFrame: {column}")
             continue
         new_col = f"{column}{suffixe}"
         df[new_col] = df[column].astype(str)
