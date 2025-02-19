@@ -12,7 +12,7 @@ from akutils.pandas_serie_cleaner import (
     strip_columns,
     remove_accent_from_cols,
     capitalise_cols,
-    fillna_float_columns,
+    fillna_numerical_columns,
     remove_empty_cols_from_df,
     convert_datetimes_to_date
 

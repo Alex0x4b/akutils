@@ -3,6 +3,7 @@ from pandas.api.types import (
     is_string_dtype,
     is_object_dtype,
     is_float_dtype,
+    is_integer_dtype,
     is_datetime64_dtype
 )
 from typing import Optional
@@ -97,15 +98,15 @@ def strip_columns(
     return df
 
 
-def fillna_float_columns(
+def fillna_numerical_columns(
     df: pd.DataFrame,
-    filler: float = 0
+    filler: int = 0
 ) -> pd.DataFrame:
-    cols_float = [
+    numerical_cols = [
         col for col in df
-        if is_float_dtype(df[col])
+        if (is_float_dtype(df[col]) | is_integer_dtype(df[col]))
     ]
-    df[cols_float] = df[cols_float].fillna(filler)
+    df[numerical_cols] = df[numerical_cols].fillna(filler)
     return df
 
 
