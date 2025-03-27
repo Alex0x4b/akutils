@@ -46,11 +46,9 @@ def list_files_from_dir(
     flags = 0 if case_sensitive else re.IGNORECASE
     all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
     matched_files = [
-        _correct_azure_path(file) for file in all_path
-        if (
-            (re.search(pattern=regex, string=file.name, flags=flags))
-            and (file.is_file())
-        )
+        corrected_path for path in all_path
+        if (corrected_path := _correct_azure_path(path)).is_file()
+        and re.search(pattern=regex, string=corrected_path.name, flags=flags)
     ]
     return matched_files
 
@@ -75,14 +73,12 @@ def list_dir_from_dir(
     """
     flags = 0 if case_sensitive else re.IGNORECASE
     all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
-    matched_dir = [
-        _correct_azure_path(dir) for dir in all_path
-        if (
-            (re.search(pattern=regex, string=dir.name, flags=flags))
-            and (dir.is_dir())
-        )
+    matched_dirs = [
+        corrected_path for path in all_path
+        if (corrected_path := _correct_azure_path(path)).is_dir()
+        and re.search(pattern=regex, string=corrected_path.name, flags=flags)
     ]
-    return matched_dir
+    return matched_dirs
 
 
 def create_new_dir(
