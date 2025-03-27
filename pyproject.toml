@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "akutils"
-version = "1.0.2"
+version = "1.0.3"
 description = """
 A utility library providing generic methods for performing recurrent data manipulation \
 in Pandas and Python.
