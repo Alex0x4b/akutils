@@ -3,7 +3,6 @@ import re
 import warnings
 from upath import UPath
 from pathlib import Path
-import shutil
 from typing import Generator
 
 from akutils.console_color import print_orange
@@ -82,7 +81,7 @@ def list_dir_from_dir(
 
 
 def create_new_dir(
-    dir_path: Path | UPath,
+    dir_path: str | Path | UPath,
     force: bool = False
 ):
     """
@@ -90,18 +89,20 @@ def create_new_dir(
 
     Parameters
     ----------
-    dir_path : Path | UPath
+    dir_path : str | Path | UPath
         Path of the new directory
     force : bool, default False
         Use force=True to delete the current directory if it already exists
     """
+    if isinstance(dir_path, str):
+        dir_path = UPath(dir_path)
     # if dir already exist and force disable : return error
     if dir_path.is_dir() and not force:
         raise IsADirectoryError("Directory already exist, use force=True to remove it")
-    # if dir already exist and force enable : remove dir
+    # if dir already exist and force enable : remove file recurcivally and then dir
     if dir_path.is_dir() and force:
-        print("=> REMOVE existing directory")
-        shutil.rmtree(dir_path)
+        print("=> REMOVING existing directory")
+        remove_dir(dir_path)
     # create new dir
     UPath(dir_path).mkdir(parents=True, exist_ok=False)
 
@@ -138,6 +139,7 @@ def remove_dir(dir_path: str | Path | UPath):
 
     # Remove the empty directory itself
     try:
+        print(f"REMOVE {dir_path}")
         dir_path.rmdir()
     except PermissionError as e:
         raise PermissionError(f"Failed to remove directory '{dir_path}': {e}")
