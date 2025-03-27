@@ -106,6 +106,43 @@ def create_new_dir(
     UPath(dir_path).mkdir(parents=True, exist_ok=False)
 
 
+def remove_dir(dir_path: str | Path | UPath):
+    """
+    Remove a directory
+
+    Parameters
+    ----------
+    dir_path : str | Path | UPath
+        Path of the new directory
+    """
+    if isinstance(dir_path, str):
+        dir_path = UPath(dir_path)
+
+    if not dir_path.exists():
+        raise FileNotFoundError(f"Path '{dir_path}' does not exist.")
+    if not dir_path.is_dir():
+        raise ValueError(f"Path '{dir_path}' is not a directory.")
+
+    # Iterate over directory contents
+    for item in dir_path.iterdir():
+        try:
+            # Prevent Symlink Infinite Loops
+            if item.is_symlink():
+                item.unlink()  # Just remove the symlink, don't follow it
+            elif item.is_dir():
+                remove_dir(item)  # Recursively delete subdirectories
+            else:
+                item.unlink()  # Delete file
+        except PermissionError as e:
+            raise PermissionError(f"Failed to delete {item}: {e}")
+
+    # Remove the empty directory itself
+    try:
+        dir_path.rmdir()
+    except PermissionError as e:
+        raise PermissionError(f"Failed to remove directory '{dir_path}': {e}")
+
+
 def remove_files_from_directory(
     dir_path: Path | UPath,
     regex: str = r"*.parquet"
