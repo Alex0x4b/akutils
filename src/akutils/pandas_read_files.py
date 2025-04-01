@@ -1,4 +1,7 @@
 import pandas as pd
+import zipfile
+import re
+from io import BytesIO
 from upath import UPath
 from pathlib import Path
 from typing import Callable
@@ -72,6 +75,77 @@ def read_csv_in_chunks(
         chunk = chunk_func(chunk, **chunk_func_kwarg) if chunk_func else chunk
         df = pd.concat([df, chunk], axis=0, ignore_index=True)
         counter += 1
+    return df
+
+
+@timeit
+def read_multiple_csv_from_zip(
+    zip_path: Path | UPath,
+    regex: str = r".*",
+    case_sensitive: bool = False,
+    allowed_extension: list = [".csv", ".txt", ".dsv", ".gz", ".zip", ".tar", "7z"],
+    add_source: bool = False,
+    **kwargs
+):
+    """
+    From a given zip, lists, reads and concatenates into a DataFrame all
+    delimited files matching the requesting pattern.
+
+    It uses pd.read_csv and ak.read_csv_in_chunks. You can use any parameters of those
+    functions.
+
+    Parameters
+    ----------
+    zip_path : Path | UPath
+        Path of the directory to be scanned
+    regex : str, default r".*"
+        Regex string to select from the directory only the files mathcing the pattern
+        Default behaviour lists all files founded in the directory
+    case_sensitive : bool, default False
+        Allow to enable or disable case sensitive on regex match
+    allowed_extension : list, default [".csv", ".txt", ".dsv", ".gz", ".zip", ".tar"]
+    **kwargs
+        Pass any argument allowed by pd.read_csv and/or by the custom chunk function
+    """
+    # Get first mathing zip from a directory
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        # Get list of file names in the archive
+        file_list = zip_ref.namelist()
+
+        # Find files matching the pattern in zip
+        flags = 0 if case_sensitive else re.IGNORECASE
+        matching_files = [f for f in file_list if re.search(regex, f, flags=flags)]
+
+        # Filter on files with csv extension
+        allowed_extension = [ext.lower() for ext in allowed_extension]
+        files_allowed = [
+            file for file in matching_files
+            if UPath(file).suffix.lower() in allowed_extension
+        ]
+
+        if not files_allowed:
+            warn(f"No files matching pattern '{regex}' found in {zip_path}")
+
+        if len(files_allowed) > 1:
+            warn(
+                f"Multiple file matching pattern '{regex}' found in {zip_path}."
+                 "Try to concat those"
+                 f"\n {files_allowed}"
+            )
+
+        # Load files
+        list_of_df = []
+        for file in files_allowed:
+            print(f"=> from ZIP READ: {file}")
+            with zip_ref.open(file) as file:
+                _df = read_csv_in_chunks(
+                    filepath_or_buffer=BytesIO(file.read()), **kwargs
+                )
+                if add_source:
+                    _df["file_source"] = file.name
+                list_of_df.append(_df)
+
+        df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
 
 
