@@ -18,6 +18,7 @@ def _correct_azure_path(file_path: Path | UPath) -> Path | UPath:
     [^/] -> n'est pas suivi par "/"
     .*$" -> tout ce qui suit
     """
+    return file_path
     if "/abfs:/" in str(file_path):
         file_name = file_path.name
         file_path = UPath(re.sub(r"\/abfs:\/[^\/].*$", "", str(file_path))) / file_name
