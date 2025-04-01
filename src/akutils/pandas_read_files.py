@@ -129,15 +129,15 @@ def read_multiple_csv_from_zip(
         if len(files_allowed) > 1:
             warn(
                 f"Multiple file matching pattern '{regex}' found in {zip_path}."
-                 "Try to concat those"
-                 f"\n {files_allowed}"
+                "Try to concat those"
+                f"\n {files_allowed}"
             )
 
         # Load files
         list_of_df = []
-        for file in files_allowed:
-            print(f"=> from ZIP READ: {file}")
-            with zip_ref.open(file) as file:
+        for file_name in files_allowed:
+            print(f"=> from ZIP READ: {file_name}")
+            with zip_ref.open(file_name) as file:
                 _df = read_csv_in_chunks(
                     filepath_or_buffer=BytesIO(file.read()), **kwargs
                 )
