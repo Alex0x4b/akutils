@@ -19,7 +19,7 @@ dependencies = [
     "openpyxl >= 3.1.0",
     "pyxlsb >= 1.0.10",
     "numpy >= 1.26.0",
-    "universal-pathlib == 0.1.4",  # extend pathlib with azure, aws...
+    "universal-pathlib>=0.2.0,<0.3.0",  # extend pathlib with azure, aws...
     "PyYAML >= 6.0",
     "rich >= 13.6.0",
     "flake8 >= 5.0.4",
