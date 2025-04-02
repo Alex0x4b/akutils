@@ -17,6 +17,22 @@ def timeit(func):
     return timeit_wrapper
 
 
+def contruct_function_args_from_locals(function, locals_args):
+    specified_args = {
+        key: value for key, value in locals_args.items() if key not in ["kwargs"]
+    }
+    additionnal_kwargs = locals_args["kwargs"]
+    all_args = dict(specified_args, **additionnal_kwargs)
+
+    # Filter on function alloewed args
+    function_args = {
+        key: value
+        for key, value in all_args.items()
+        if key in function.__code__.co_varnames
+    }
+    return function_args
+
+
 def sanitize_function_args_from_locals(function, locals_args):
     # Check if a function is passed, if not return empty dict
     if not hasattr(function, '__call__'):

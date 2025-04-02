@@ -28,15 +28,15 @@ class TestReadCsvInChunks():
             columns=["col1", "col2", "country"]
         )
 
-        def filter_chunk(df_chunk: pd.DataFrame, countries: list) -> pd.DataFrame:
-            return df_chunk[df_chunk["country"].isin(countries)]
+        def filter_chunk(df: pd.DataFrame, countries: list) -> pd.DataFrame:
+            return df[df["country"].isin(countries)]
 
         file_path = PATH_TO_AKUTILS_PKG / "tests" / "_fixtures" / "sales.csv"
         df = ak.read_csv_in_chunks(
             file_path,
             chunk_func=filter_chunk,
+            chunk_func_kwarg={"countries": ["Spain"]},
             chunksize=5,
-            countries=["Spain"],
             sep=";",
             dtype=None
         )
@@ -51,21 +51,23 @@ class TestReadCsvInChunks():
         df_expected["new_col"] = (df_expected["col1"] + df_expected["col2"]) * 2.4 + 151
 
         def add_new_col_to_chunk(
-            df_chunk: pd.DataFrame,
+            df: pd.DataFrame,
             factor: float,
             constant: int
         ) -> pd.DataFrame:
-            df_chunk["new_col"] = (
-                (df_chunk["col1"] + df_chunk["col2"]) * factor + constant
+            df["new_col"] = (
+                (df["col1"] + df["col2"]) * factor + constant
             )
-            return df_chunk
+            return df
 
         file_path = PATH_TO_AKUTILS_PKG / "tests" / "_fixtures" / "sales.csv"
         df = ak.read_csv_in_chunks(
             file_path,
             chunk_func=add_new_col_to_chunk,
-            factor=2.4,
-            constant=151,
+            chunk_func_kwarg={
+                "factor": 2.4,
+                "constant": 151,
+            },
             chunksize=5,
             sep=";",
             dtype=None
@@ -134,8 +136,8 @@ class TestReadMultipleCsvFromDir():
         Case with chunk function (the dir containing also not text file extension)
         """
 
-        def filter_chunk(df_chunk: pd.DataFrame) -> pd.DataFrame:
-            return df_chunk[df_chunk["nb_sales"] <= 4]
+        def filter_chunk(df: pd.DataFrame) -> pd.DataFrame:
+            return df[df["nb_sales"] <= 4]
 
         df_expected = self.df_expected.copy()
         df_expected = df_expected[df_expected["nb_sales"] <= 4]
