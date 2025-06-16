@@ -1,7 +1,7 @@
 import pandas as pd
 import zipfile
 import re
-from io import BytesIO
+from io import TextIOWrapper
 from upath import UPath
 from pathlib import Path
 from typing import Callable
@@ -133,14 +133,16 @@ def read_multiple_csv_from_zip(
                 f"\n {files_allowed}"
             )
 
+        # Get encoding
+        encoding = kwargs.get("encoding") if kwargs.get("encoding") else "utf-8"
+
         # Load files
         list_of_df = []
         for file_name in files_allowed:
             print(f"=> from ZIP READ: {file_name}")
             with zip_ref.open(file_name) as file:
-                _df = read_csv_in_chunks(
-                    filepath_or_buffer=BytesIO(file.read()), **kwargs
-                )
+                text_file = TextIOWrapper(file, encoding=encoding)
+                _df = read_csv_in_chunks(filepath_or_buffer=text_file, **kwargs)
                 if add_source:
                     _df["file_source"] = file.name
                 list_of_df.append(_df)
