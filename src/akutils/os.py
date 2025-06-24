@@ -1,6 +1,7 @@
 import os
 import re
 import warnings
+from azure.core.exceptions import HttpResponseError
 from upath import UPath
 from pathlib import Path
 from typing import Generator
@@ -59,11 +60,17 @@ def list_files_from_dir(
     """
     flags = 0 if case_sensitive else re.IGNORECASE
     all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
-    matched_files = [
-        corrected_path for path in all_path
-        if (corrected_path := _correct_azure_path(path)).is_file()
-        and re.search(pattern=regex, string=corrected_path.name, flags=flags)
-    ]
+    matched_files = []
+    for path in all_path:
+        corrected_path = _correct_azure_path(path)
+        try:
+            if not corrected_path.is_file():
+                continue
+        except HttpResponseError:
+            # blob not really exist (e.g. empty dir)
+            continue
+        if re.search(pattern=regex, string=corrected_path.name, flags=flags):
+            matched_files.append(corrected_path)
     return matched_files
 
 
@@ -73,8 +80,7 @@ def list_dir_from_dir(
     case_sensitive: bool = False
 ) -> list[Path | UPath]:
     """
-    Lists all directory paths matching a regular expression in a directory.
-
+    Lists all file paths matching a regular expression in a directory.
     Parameters
     ----------
     dir_path : Path | UPath
@@ -87,11 +93,17 @@ def list_dir_from_dir(
     """
     flags = 0 if case_sensitive else re.IGNORECASE
     all_path: Generator[Path | UPath, None, None] = dir_path.glob("*")
-    matched_dirs = [
-        corrected_path for path in all_path
-        if (corrected_path := _correct_azure_path(path)).is_dir()
-        and re.search(pattern=regex, string=corrected_path.name, flags=flags)
-    ]
+    matched_dirs = []
+    for path in all_path:
+        corrected_path = _correct_azure_path(path)
+        try:
+            if not corrected_path.is_dir():
+                continue
+        except HttpResponseError:
+            # blob not really exist (e.g. empty dir)
+            continue
+        if re.search(pattern=regex, string=corrected_path.name, flags=flags):
+            matched_dirs.append(corrected_path)
     return matched_dirs
 
 
