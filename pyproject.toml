@@ -20,6 +20,7 @@ dependencies = [
     "pyxlsb >= 1.0.10",
     "numpy >= 1.26.0",
     "universal-pathlib == 0.1.4",  # extend pathlib with azure, aws...
+    "azure-core == 1.32.0",
     "PyYAML >= 6.0",
     "rich >= 13.6.0",
     "flake8 >= 5.0.4",
