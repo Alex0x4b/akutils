@@ -11,12 +11,31 @@ from akutils.console_color import print_orange
 def _correct_azure_path(file_path: Path | UPath) -> Path | UPath:
     """
     Fix paths with duplicated 'abfs:/' caused by some versions of adlfs/glob behavior.
+
+    # UNITEST
+    # =======
+    # Most commun error
+    file_path = "abfs://u@lab.dfs.net/user/data/abfs:/u@lab.dfs.net/user/data/src"
+    _correct_azure_path(file_path)
+
+    # Normal path
+    file_path = "abfs://u@lab.dfs.net/user/data/src"
+    _correct_azure_path(file_path)
+
+    # Other bas path 1
+    file_path = "abfs:/u@lab.dfs.net/user/data/abfs:/u@lab.dfs.net/user/data/src"
+    _correct_azure_path(file_path)
+
+    # Other bas path 2
+    file_path = "abfs://u@lab.dfs.net/user/data/abfs://u@lab.dfs.net/user/data/src"
+    _correct_azure_path(file_path)
     """
     path_str = str(file_path)
-    # Look for a pattern like: abfs://.../abfs:/... and fix it
-    match = re.search(r"(abfs://[^/]+/.*)(/abfs:/.*)", path_str)
+    # Look for a pattern like: abfs:/.../abfs:/... and fix it
+    match = re.search(r"(abfs:/.*)(abfs:/.*)", path_str)
     if match:
-        path_str = match.group(1)  # drop the second abfs:/...
+        path_str = match.group(2)  # drop the second abfs:/...
+        path_str = re.sub(r'\babfs:/\b', 'abfs://', path_str)
     return UPath(path_str)
 
 
