@@ -1,8 +1,10 @@
 import pandas as pd
-import zipfile
+import fsspec  # type: ignore
 import re
-from io import TextIOWrapper
+import zipfile
+from io import TextIOWrapper, BytesIO
 from upath import UPath
+from upath.implementations.cloud import AzurePath
 from pathlib import Path
 from typing import Callable
 from pandas._typing import (
@@ -80,7 +82,7 @@ def read_csv_in_chunks(
 
 @timeit
 def read_multiple_csv_from_zip(
-    zip_path: Path | UPath,
+    zip_path: Path | UPath | BytesIO,
     regex: str = r".*",
     case_sensitive: bool = False,
     allowed_extension: list = [".csv", ".txt", ".dsv", ".gz", ".zip", ".tar", "7z"],
@@ -107,6 +109,12 @@ def read_multiple_csv_from_zip(
     **kwargs
         Pass any argument allowed by pd.read_csv and/or by the custom chunk function
     """
+
+    # Handle Azure zip
+    if type(zip_path) is AzurePath:
+        with fsspec.open(zip_path, 'rb') as f:
+            zip_path = BytesIO(f.read())
+
     # Get first mathing zip from a directory
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
         # Get list of file names in the archive
