@@ -10,18 +10,14 @@ from akutils.console_color import print_orange
 
 def _correct_azure_path(file_path: Path | UPath) -> Path | UPath:
     """
-    Due newer glob version, Azurepath is duplicate in UPath.glob() output
-
-    Regex explained
-    ===============
-    abfs:/ -> start with absf:/
-    [^/] -> n'est pas suivi par "/"
-    .*$" -> tout ce qui suit
+    Fix paths with duplicated 'abfs:/' caused by some versions of adlfs/glob behavior.
     """
-    if "/abfs:/" in str(file_path):
-        file_name = file_path.name
-        file_path = UPath(re.sub(r"\/abfs:\/[^\/].*$", "", str(file_path))) / file_name
-    return file_path
+    path_str = str(file_path)
+    # Look for a pattern like: abfs://.../abfs:/... and fix it
+    match = re.search(r"(abfs://[^/]+/.*)(/abfs:/.*)", path_str)
+    if match:
+        path_str = match.group(1)  # drop the second abfs:/...
+    return UPath(path_str)
 
 
 def list_files_from_dir(
