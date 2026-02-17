@@ -19,6 +19,15 @@ from akutils.utils_functions import (
 from akutils.os import list_files_from_dir, warn
 
 
+def _warn_column_mismatch(list_of_df):
+    for i, df in enumerate(list_of_df[1:], start=1):
+        diff = set(df.columns) ^ set(list_of_df[0].columns)
+        if diff:
+            extra = set(df.columns) - set(list_of_df[0].columns)
+            missing = set(list_of_df[0].columns) - set(df.columns)
+            warn(f"[WARNING] Columns mismatch for file_{i + 1}: missing={missing or '{}'}, extra={extra or '{}'}")
+
+
 @timeit
 def read_csv_in_chunks(
     filepath_or_buffer: FilePath | ReadCsvBuffer[bytes] | ReadCsvBuffer[str],
@@ -112,7 +121,7 @@ def read_multiple_csv_from_zip(
 
     # Handle Azure zip
     if type(zip_path) is AzurePath:
-        with fsspec.open(zip_path, 'rb') as f:
+        with fsspec.open(zip_path, 'r') as f:
             zip_path = BytesIO(f.read())
 
     # Get first mathing zip from a directory
@@ -135,10 +144,9 @@ def read_multiple_csv_from_zip(
             warn(f"No files matching pattern '{regex}' found in {zip_path}")
 
         if len(files_allowed) > 1:
-            warn(
-                f"Multiple file matching pattern '{regex}' found in {zip_path}."
-                "Try to concat those"
-                f"\n {files_allowed}"
+            print(
+                f"[INFO] Multiple files matching pattern '{regex}' found in {zip_path.name}."
+                f"\nTry to concat those {len(files_allowed)}"
             )
 
         # Get encoding
@@ -155,6 +163,7 @@ def read_multiple_csv_from_zip(
                     _df["file_source"] = file.name
                 list_of_df.append(_df)
 
+        _warn_column_mismatch(list_of_df)
         df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
 
@@ -209,6 +218,7 @@ def read_multiple_csv_from_dir(
         if add_source:
             _df["file_source"] = file.name
         list_of_df.append(_df)
+    _warn_column_mismatch(list_of_df)
     df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
 
@@ -262,5 +272,6 @@ def read_multiple_xlsx_from_dir(
         if add_source:
             _df["file_source"] = file.name
         list_of_df.append(_df)
+    _warn_column_mismatch(list_of_df)
     df = pd.concat(list_of_df, axis=0, ignore_index=True)
     return df
