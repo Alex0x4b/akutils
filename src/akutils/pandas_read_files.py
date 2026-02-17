@@ -25,7 +25,10 @@ def _warn_column_mismatch(list_of_df):
         if diff:
             extra = set(df.columns) - set(list_of_df[0].columns)
             missing = set(list_of_df[0].columns) - set(df.columns)
-            warn(f"[WARNING] Columns mismatch for file_{i + 1}: missing={missing or '{}'}, extra={extra or '{}'}")
+            warn(
+                f"[WARNING] Columns mismatch for file_{i + 1}: "
+                f"missing={missing or '{}'}, extra={extra or '{}'}"
+            )
 
 
 @timeit
@@ -145,7 +148,8 @@ def read_multiple_csv_from_zip(
 
         if len(files_allowed) > 1:
             print(
-                f"[INFO] Multiple files matching pattern '{regex}' found in {zip_path.name}."
+                f"[INFO] Multiple files matching pattern '{regex}' "
+                f"found in {zip_path.name}."
                 f"\nTry to concat those {len(files_allowed)}"
             )
 
