@@ -15,8 +15,8 @@ from akutils.pandas_serie_cleaner import (
     capitalise_cols,
     fillna_numerical_columns,
     remove_empty_cols_from_df,
-    convert_datetimes_to_date
-
+    convert_datetimes_to_date,
+    map_col_and_insert_next,
 )
 from akutils.os import (
     list_files_from_dir,

@@ -129,3 +129,28 @@ def convert_datetimes_to_date(df: pd.DataFrame) -> pd.DataFrame:
     for col in cols_datetime:
         df[col] = df[col].dt.date
     return df
+
+
+def map_col_and_insert_next(df, col_to_map, mapper, suffixe="_lib", value_location=None):
+    """
+    Maps a column using a dictionary, inserts it next to the source,
+    and warns about missing mappings.
+    """
+    if col_to_map not in df.columns:
+        raise KeyError(f"Column '{col_to_map}' not found in DataFrame.")
+
+    value_location = col_to_map if value_location is None else value_location
+    mapped_col = f"{col_to_map}{suffixe}"
+
+    new_values = df[col_to_map].map(mapper)
+
+    nb_inconnu = new_values.isna().sum()
+    if nb_inconnu > 0:
+        new_values = new_values.fillna("inconnu")
+        warn(f"[WARNING] Unknown values in {value_location}: {nb_inconnu}")
+
+    if mapped_col in df.columns:
+        df = df.drop(columns=mapped_col)
+    idx = df.columns.get_loc(col_to_map)
+    df.insert(loc=idx + 1, column=mapped_col, value=new_values)
+    return df
