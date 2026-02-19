@@ -131,7 +131,9 @@ def convert_datetimes_to_date(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def map_col_and_insert_next(df, col_to_map, mapper, suffixe="_lib", value_location=None):
+def map_col_and_insert_next(
+    df, col_to_map, mapper, suffixe="_lib", value_location=None
+):
     """
     Maps a column using a dictionary, inserts it next to the source,
     and warns about missing mappings.
