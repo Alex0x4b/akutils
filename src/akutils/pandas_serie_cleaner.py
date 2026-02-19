@@ -132,14 +132,19 @@ def convert_datetimes_to_date(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def map_col_and_insert_next(
-    df, col_to_map, mapper, suffixe="_lib", value_location=None
-):
+    df: pd.DataFrame,
+    col_to_map: str,
+    mapper: dict,
+    suffixe: str = "_lib",
+    default_value: str = "unknown",
+    value_location: str | None = None,
+) -> pd.DataFrame:
     """
     Maps a column using a dictionary, inserts it next to the source,
     and warns about missing mappings.
     """
     if col_to_map not in df.columns:
-        raise KeyError(f"Column '{col_to_map}' not found in DataFrame.")
+        raise KeyError(f"Column '{col_to_map}' not found in the DataFrame.")
 
     value_location = col_to_map if value_location is None else value_location
     mapped_col = f"{col_to_map}{suffixe}"
@@ -148,11 +153,15 @@ def map_col_and_insert_next(
 
     nb_inconnu = new_values.isna().sum()
     if nb_inconnu > 0:
-        new_values = new_values.fillna("inconnu")
+        new_values = new_values.fillna(default_value)
         warn(f"[WARNING] Unknown values in {value_location}: {nb_inconnu}")
 
     if mapped_col in df.columns:
         df = df.drop(columns=mapped_col)
+
     idx = df.columns.get_loc(col_to_map)
+    if not isinstance(idx, int):
+        raise ValueError(f"Column '{col_to_map}' is not unique in the DataFrame.")
+
     df.insert(loc=idx + 1, column=mapped_col, value=new_values)
     return df
